@@ -81,3 +81,37 @@ function mostra_nascondi_campi_checkout_personalizzati() {
     </script>';
 }
 add_action('woocommerce_after_checkout_form', 'mostra_nascondi_campi_checkout_personalizzati');
+
+
+// Salva i campi personalizzati nel database
+function salva_campi_personalizzati_checkout($order_id) {
+    if (!empty($_POST['fattura_checkbox']) && $_POST['fattura_checkbox'] === '1') {
+        $partita_iva         = sanitize_text_field($_POST['partita_iva']);
+        $codice_fiscale      = sanitize_text_field($_POST['codice_fiscale']);
+        $codice_sdi          = sanitize_text_field($_POST['codice_sdi']);
+        $rappresentante_legale = sanitize_text_field($_POST['rappresentante_legale']);
+        $email_pec           = sanitize_text_field($_POST['email_pec']);
+
+        // Salvataggio dei campi personalizzati come metadati dell'ordine
+        if (!empty($partita_iva)) {
+            update_post_meta($order_id, 'Partita IVA', $partita_iva);
+        }
+
+        if (!empty($codice_fiscale)) {
+            update_post_meta($order_id, 'Codice Fiscale', $codice_fiscale);
+        }
+
+        if (!empty($codice_sdi)) {
+            update_post_meta($order_id, 'Codice SDI', $codice_sdi);
+        }
+
+        if (!empty($rappresentante_legale)) {
+            update_post_meta($order_id, 'Rappresentante Legale', $rappresentante_legale);
+        }
+
+        if (!empty($email_pec)) {
+            update_post_meta($order_id, 'Email PEC', $email_pec);
+        }
+    }
+}
+add_action('woocommerce_checkout_update_order_meta', 'salva_campi_personalizzati_checkout');
